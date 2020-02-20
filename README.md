@@ -18,3 +18,7 @@ Otherwise, code in Fortran"
     - A. Poor Dabbler
 
 
+# What does it take?
+
+People often ask me, "what does it take to reach a Fortran state of mind?"
+And this repository is about just that.
