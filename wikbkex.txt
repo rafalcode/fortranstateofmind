@@ -1,0 +1,1290 @@
+   #[1]Edit [2]Wikibooks (en) [3]Wikibooks Atom feed
+This file pulled from wikipedia
+
+Fortran/Fortran examples
+
+   From Wikibooks, open books for an open world
+   < [4]Fortran
+   [5]Jump to navigation [6]Jump to search
+
+   Part of the [7]Fortran WikiBook
+
+   The following Fortran code examples or sample programs show different
+   situations depending on the compiler. The first set of examples are for
+   the Fortran II, IV, and 77 compilers. The remaining examples can be
+   compiled and run with any newer standard Fortran compiler (see the
+   [8]end of the main Fortran article for lists of compilers). By
+   convention most contemporary Fortran compilers select the language
+   standard to use during compilation based on source code file name
+   suffix: FORTRAN 77 for .f (or the less common .for), Fortran 90 for
+   .f90, Fortran 95 for .f95. Other standards, if supported, may be
+   selected manually with a command line option.
+   [ ]
+
+Contents
+
+     * [9]1 FORTRAN II, IV, and 77 compilers
+          + [10]1.1 Area Of a Triangle program
+               o [11]1.1.1 Simple Fortran II program
+               o [12]1.1.2 Simple Fortran IV program
+               o [13]1.1.3 Simple Fortran 77 program
+     * [14]2 "Retro" FORTRAN IV
+          + [15]2.1 Hello, World program
+               o [16]2.1.1 FORTRAN 66 (also FORTRAN IV)
+               o [17]2.1.2 FORTRAN 77
+               o [18]2.1.3 Fortran 90
+     * [19]3 Fortran 77 examples
+          + [20]3.1 Greatest common divisor
+          + [21]3.2 Complex numbers
+          + [22]3.3 FORTRAN program to find the area of a triangle
+     * [23]4 Fortran 90/95 examples
+          + [24]4.1 Summations with a DO loop
+          + [25]4.2 Calculating cylinder area
+          + [26]4.3 Dynamic memory allocation and arrays
+          + [27]4.4 Writing functions
+          + [28]4.5 Writing subroutines
+          + [29]4.6 Internal and Elemental Procedures
+          + [30]4.7 Pointers and targets methods
+          + [31]4.8 Module programming
+
+FORTRAN II, IV, and 77 compilers[[32]edit]
+
+   NOTE: Before FORTRAN 90, most FORTRAN compilers enforced fixed-format
+   source code, a carryover from [33]IBM punch cards
+     * comments must begin with a * or C or ! in column 1
+     * statement labels must occur in columns 1-5
+     * continuation lines must have a non-blank character in column 6
+     * statements must start in column 7
+     * the line-length may be limited to 72 characters (derived from the
+       80-byte width of a punch-card, with last 8 characters reserved for
+       (optional) sequence numbers)
+
+   If errors are produced when you compile your FORTRAN code, first check
+   the column alignment. Some compilers also offer free form source by
+   using a compiler flag
+
+Area Of a Triangle program[[34]edit]
+
+Simple Fortran II program[[35]edit]
+
+   One data card input
+
+   If one of the input values is zero, then the program will end with an
+   error code of "1" in the job control card listing following the
+   execution of the program. Normal output will be one line printed with
+   A, B, C, and AREA. No specific units are stated.
+C AREA OF A TRIANGLE - HERON'S FORMULA
+C INPUT - CARD READER UNIT 5, INTEGER INPUT
+C OUTPUT -
+C INTEGER VARIABLES START WITH I,J,K,L,M OR N
+      READ(5,501) IA,IB,IC
+  501 FORMAT(3I5)
+      IF(IA.EQ.0 .OR. IB.EQ.0 .OR. IC.EQ.0) STOP 1
+      S = (IA + IB + IC) / 2.0
+      AREA = SQRT( S * (S - IA) * (S - IB) * (S - IC) )
+      WRITE(6,601) IA,IB,IC,AREA
+  601 FORMAT(4H A= ,I5,5H  B= ,I5,5H  C= ,I5,8H  AREA= ,F10.2,
+     $13H SQUARE UNITS)
+      STOP
+      END
+
+Simple Fortran IV program[[36]edit]
+
+   Multiple data card input
+
+   This program has two input checks: one for a blank card to indicate
+   end-of-data, and the other for a zero value within the input data.
+   Either condition causes a message to be [37]printed.
+C AREA OF A TRIANGLE - HERON'S FORMULA
+C INPUT - CARD READER UNIT 5, INTEGER INPUT, ONE BLANK CARD FOR END-OF-DATA
+C OUTPUT - LINE PRINTER UNIT 6, REAL OUTPUT
+C INPUT ERROR DISPAY ERROR MESSAGE ON OUTPUT
+  501 FORMAT(3I5)
+  601 FORMAT(4H A= ,I5,5H  B= ,I5,5H  C= ,I5,8H  AREA= ,F10.2,
+     $13H SQUARE UNITS)
+  602 FORMAT(10HNORMAL END)
+  603 FORMAT(23HINPUT ERROR, ZERO VALUE)
+      INTEGER A,B,C
+   10 READ(5,501) A,B,C
+      IF(A.EQ.0 .AND. B.EQ.0 .AND. C.EQ.0) GO TO 50
+      IF(A.EQ.0 .OR.  B.EQ.0 .OR.  C.EQ.0) GO TO 90
+      S = (A + B + C) / 2.0
+      AREA = SQRT( S * (S - A) * (S - B) * (S - C) )
+      WRITE(6,601) A,B,C,AREA
+      GO TO 10
+   50 WRITE(6,602)
+      STOP
+   90 WRITE(6,603)
+      STOP
+      END
+
+Simple Fortran 77 program[[38]edit]
+
+   Multiple data card input
+
+   This program has two input checks in the READ statement with the END
+   and ERR parameters, one for a blank card to indicate end-of-data; and
+   the other for zero value along with valid data. In either condition, a
+   message will be printed.
+C AREA OF A TRIANGLE - HERON'S FORMULA
+C INPUT - CARD READER UNIT 5, INTEGER INPUT, NO BLANK CARD FOR END OF DATA
+C OUTPUT - LINE PRINTER UNIT 6, REAL OUTPUT
+C INPUT ERROR DISPAYS ERROR MESSAGE ON OUTPUT
+  501 FORMAT(3I5)
+  601 FORMAT(" A= ",I5,"  B= ",I5,"  C= ",I5,"  AREA= ",F10.2,
+     $"SQUARE UNITS")
+  602 FORMAT("NORMAL END")
+  603 FORMAT("INPUT ERROR OR ZERO VALUE ERROR")
+      INTEGER A,B,C
+   10 READ(5,501,END=50,ERR=90) A,B,C
+      IF(A=0 .OR. B=0 .OR. C=0) GO TO 90
+      S = (A + B + C) / 2.0
+      AREA = SQRT( S * (S - A) * (S - B) * (S - C) )
+      WRITE(6,601) A,B,C,AREA
+      GO TO 10
+   50 WRITE(6,602)
+      STOP
+   90 WRITE(6,603)
+      STOP
+      END
+
+"Retro" FORTRAN IV[[39]edit]
+
+   A retro example of a FORTRAN IV (later evolved into FORTRAN 66) program
+   deck is available on the [40]IBM 1130 page, including the IBM 1130 DM2
+   JCL required for compilation and execution. An IBM 1130 emulator is
+   available at [41]IBM 1130.org that will allow the FORTRAN IV program to
+   be compiled and run on a [42]PC.
+
+Hello, World program[[43]edit]
+
+   In keeping with computing tradition, the first example presented is a
+   simple program to display the words "Hello, world" on the screen (or
+   printer).
+
+FORTRAN 66 (also FORTRAN IV)[[44]edit]
+
+ C     FORTRAN IV WAS ONE OF THE FIRST PROGRAMMING
+ C     LANGUAGES TO SUPPORT SOURCE COMMENTS
+       WRITE (6,7)
+     7 FORMAT(13H HELLO, WORLD)
+       STOP
+       END
+
+   This program prints "HELLO, WORLD" to Fortran unit number 6, which on
+   most machines was the [45]line printer or [46]terminal. (The [47]card
+   reader or [48]keyboard was usually connected as unit 5). The number 7
+   in the WRITE statement refers to the statement number of the
+   corresponding FORMAT statement. FORMAT statements may be placed
+   anywhere in the same program or function/subroutine block as the WRITE
+   statements which reference them. Typically a FORMAT statement is placed
+   immediately following the WRITE statement which invokes it;
+   alternatively, FORMAT statements are grouped together at the end of the
+   program or subprogram block. If execution flows into a FORMAT
+   statement, it is a [49]no-op; thus, the example above has only two
+   executable statements, WRITE and STOP.
+
+   The initial 13H in the FORMAT statement in the above example defines a
+   [50]Hollerith constant, here meaning that the 13 characters immediately
+   following are to be taken as a character constant (note that the
+   Hollerith constant is not surrounded by delimiters). (Some compilers
+   also supported character literals enclosed in [51]single quotes, a
+   practice that came to be standard with FORTRAN 77.)
+
+   The space immediately following the 13H is a carriage control
+   character, telling the I/O system to advance to a new line on the
+   output. A zero in this position advances two lines (double space), a 1
+   advances to the top of a new page and + character will not advance to a
+   new line, allowing overprinting.
+
+FORTRAN 77[[52]edit]
+
+   As of FORTRAN 77, single quotes are used to delimit character literals,
+   and inline character strings may be used instead of references to
+   FORMAT statements. Comment lines may be indicated with either a C or an
+   asterisk (*) in column 1.
+      PROGRAM HELLO
+*     The PRINT statement is like WRITE,
+*     but prints to the standard output unit
+        PRINT '(A)', 'Hello, world'
+        STOP
+      END
+
+Fortran 90[[53]edit]
+
+   As of Fortran 90, [54]double quotes are allowed in addition to single
+   quotes. An updated version of the Hello, world example (which here
+   makes use of list-directed I/O, supported as of FORTRAN 77) could be
+   written in Fortran 90 as follows:
+ program HelloWorld
+   write (*,*) 'Hello, world!'   ! This is an inline comment
+ end program HelloWorld
+
+Fortran 77 examples[[55]edit]
+
+Greatest common divisor[[56]edit]
+
+   The following introductory example in FORTRAN 77 finds the [57]greatest
+   common divisor for two numbers
+   [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+   displaystyle="true" scriptlevel="0"> <mi>A</mi> </mstyle> </mrow>
+   <annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+   </semantics> :MATH]
+   A and
+   [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+   displaystyle="true" scriptlevel="0"> <mi>B</mi> </mstyle> </mrow>
+   <annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+   </semantics> :MATH]
+   B using a verbatim implementation of [58]Euclid's algorithm.
+*     euclid.f (FORTRAN 77)
+*     Find greatest common divisor using the Euclidean algorithm
+
+      PROGRAM EUCLID
+        PRINT *, 'A?'
+        READ *, NA
+        IF (NA.LE.0) THEN
+          PRINT *, 'A must be a positive integer.'
+          STOP
+        END IF
+        PRINT *, 'B?'
+        READ *, NB
+        IF (NB.LE.0) THEN
+          PRINT *, 'B must be a positive integer.'
+          STOP
+        END IF
+        PRINT *, 'The GCD of', NA, ' and', NB, ' is', NGCD(NA, NB), '.'
+        STOP
+      END
+
+      FUNCTION NGCD(NA, NB)
+        IA = NA
+        IB = NB
+    1   IF (IB.NE.0) THEN
+          ITEMP = IA
+          IA = IB
+          IB = MOD(ITEMP, IB)
+          GOTO 1
+        END IF
+        NGCD = IA
+        RETURN
+      END
+
+   The above example is intended to illustrate the following:
+     * The PRINT and READ statements in the above use '*' as a format,
+       specifying list-directed formatting. List-directed formatting
+       instructs the compiler to make an educated guess about the required
+       input or output format based on the following arguments.
+     * As the earliest machines running Fortran had restricted character
+       sets, FORTRAN 77 uses abbreviations such as .EQ., .NE., .LT., .GT.,
+       .LE., and .GE. to represent the relational operators =, ≠, <, >, ≤,
+       and ≥, respectively.
+     * This example relies on the [59]implicit typing mechanism to specify
+       the INTEGER types of NA, NB, IA, IB, and ITEMP.
+     * In the function NGCD(NA, NB), the values of the function arguments
+       NA and NB are copied into the local variables IA and IB
+       respectively. This is necessary as the values of IA and IB are
+       altered within the function. Because argument passing in Fortran
+       functions and subroutines utilize [60]call by reference by default
+       (rather than [61]call by value, as is the default in languages such
+       as [62]C), modifying NA and NB from within the function would
+       effectively have modified the corresponding actual arguments in the
+       main PROGRAM unit which called the function.
+
+   The following shows the results of compiling and running the program.
+$ g77 -o euclid euclid.f
+$ euclid
+ A?
+24
+ B?
+36
+ The GCD of 24 and 36 is 12.
+
+Complex numbers[[63]edit]
+
+   The following FORTRAN 77 example prints out the values of
+   [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+   displaystyle="true" scriptlevel="0"> <msup> <mi>e</mi> <mrow
+   class="MJX-TeXAtom-ORD"> <mi>j</mi> <mi>i</mi> <mi>π</mi> <mrow
+   class="MJX-TeXAtom-ORD"> <mo>/</mo> </mrow> <mn>4</mn> </mrow> </msup>
+   </mstyle> </mrow> <annotation
+   encoding="application/x-tex">{\displaystyle e^{ji\pi /4}}</annotation>
+   </semantics> :MATH]
+   e^{{ji\pi /4}} (where
+   [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+   displaystyle="true" scriptlevel="0"> <mi>j</mi> <mo>=</mo> <mrow
+   class="MJX-TeXAtom-ORD"> <msqrt> <mo>−</mo> <mn>1</mn> </msqrt> </mrow>
+   </mstyle> </mrow> <annotation
+   encoding="application/x-tex">{\displaystyle j={\sqrt
+   {-1}}}</annotation> </semantics> :MATH]
+   j={\sqrt {-1}} ) for values of
+   [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+   displaystyle="true" scriptlevel="0"> <mi>i</mi> <mo>=</mo> <mn>0</mn>
+   <mo>,</mo> <mn>1</mn> <mo>,</mo> <mo>…</mo> <mo>,</mo> <mn>7</mn>
+   </mstyle> </mrow> <annotation
+   encoding="application/x-tex">{\displaystyle i=0,1,\ldots
+   ,7}</annotation> </semantics> :MATH]
+   i=0,1,\ldots ,7 .
+*     cmplxd.f (FORTRAN 77)
+*     Demonstration of COMPLEX numbers
+*
+*     Prints the values of e ** (j * i * pi / 4) for i = 0, 1, 2, ..., 7
+*         where j is the imaginary number sqrt(-1)
+
+      PROGRAM CMPLXD
+        IMPLICIT COMPLEX(X)
+        PARAMETER (PI = 3.141592653589793, XJ = (0, 1))
+        DO 1, I = 0, 7
+          X = EXP(XJ * I * PI / 4)
+          IF (AIMAG(X).LT.0) THEN
+            PRINT 2, 'e**(j*', I, '*pi/4) = ', REAL(X), ' - j',-AIMAG(X)
+          ELSE
+            PRINT 2, 'e**(j*', I, '*pi/4) = ', REAL(X), ' + j', AIMAG(X)
+          END IF
+    2     FORMAT (A, I1, A, F10.7, A, F9.7)
+    1     CONTINUE
+        STOP
+      END
+
+   The above example is intended to illustrate the following:
+     * The IMPLICIT statement can be used to specify the implicit type of
+       variables based on their initial letter if different from the
+       default implicit typing scheme described [64]above. In this
+       example, this statement specifies that the implicit type of
+       variables beginning with the letter X shall be COMPLEX.
+     * The PARAMETER statement may be used to specify constants. The
+       second constant in this example (XJ) is given the complex-valued
+       value
+       [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+       displaystyle="true" scriptlevel="0"> <mn>0</mn> <mo>+</mo>
+       <mi>j</mi> <mn>1</mn> </mstyle> </mrow> <annotation
+       encoding="application/x-tex">{\displaystyle 0+j1}</annotation>
+       </semantics> :MATH]
+       0+j1 , where
+       [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+       displaystyle="true" scriptlevel="0"> <mi>j</mi> </mstyle> </mrow>
+       <annotation encoding="application/x-tex">{\displaystyle
+       j}</annotation> </semantics> :MATH]
+       j is the [65]imaginary unit
+       [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+       displaystyle="true" scriptlevel="0"> <mrow class="MJX-TeXAtom-ORD">
+       <msqrt> <mo>−</mo> <mn>1</mn> </msqrt> </mrow> </mstyle> </mrow>
+       <annotation encoding="application/x-tex">{\displaystyle {\sqrt
+       {-1}}}</annotation> </semantics> :MATH]
+       {\sqrt {-1}} .
+     * The first number in the DO statement specifies the number of the
+       last statement considered to be within the body of the DO loop. In
+       this example, as neither the END IF nor the FORMAT is a single
+       executable statement, the CONTINUE statement (which does nothing)
+       is used simply in order for there to be some statement to denote as
+       the final statement of the loop.
+     * EXP() corresponds to the exponential function
+       [MATH: <semantics> <mrow class="MJX-TeXAtom-ORD"> <mstyle
+       displaystyle="true" scriptlevel="0"> <msup> <mi>e</mi> <mrow
+       class="MJX-TeXAtom-ORD"> <mi>x</mi> </mrow> </msup> </mstyle>
+       </mrow> <annotation encoding="application/x-tex">{\displaystyle
+       e^{x}}</annotation> </semantics> :MATH]
+       e^{x} . In FORTRAN 77, this is a generic function, meaning that it
+       accepts arguments of multiple types (such as REAL and, in this
+       example, COMPLEX). In FORTRAN 66, a specific function would have to
+       be called by name depending on the type of the function arguments
+       (for this example, CEXP() for a COMPLEX-valued argument).
+     * When applied to a COMPLEX-valued argument, REAL() and AIMAG()
+       return the values of the argument's real and imaginary components,
+       respectively.
+
+   Incidentally, the output of the above program is as follows (see the
+   article on [66]Euler's formula for the geometric interpretation of
+   these values as eight points spaced evenly about a unit circle in the
+   [67]complex plane).
+$ cmplxd
+e**(j*0*pi/4) =  1.0000000 + j0.0000000
+e**(j*1*pi/4) =  0.7071068 + j0.7071068
+e**(j*2*pi/4) =  0.0000000 + j1.0000000
+e**(j*3*pi/4) = -0.7071068 + j0.7071068
+e**(j*4*pi/4) = -1.0000000 - j0.0000001
+e**(j*5*pi/4) = -0.7071066 - j0.7071069
+e**(j*6*pi/4) =  0.0000000 - j1.0000000
+e**(j*7*pi/4) =  0.7071070 - j0.7071065
+
+   Error can be seen occurring in the last decimal place in some of the
+   numbers above, a result of the COMPLEX data type representing its real
+   and imaginary components in single precision. Incidentally, Fortran 90
+   also made standard a double-precision complex-number data type
+   (although several compilers provided such a type even earlier).
+
+FORTRAN program to find the area of a triangle[[68]edit]
+
+C     AREA OF A TRIANGLE
+      READ*,A,B,C
+      S=(A+B+C)/2
+      A=SQRT(S*(S-A)*(S-B)*(S-C))
+      PRINT*,"AREA=",A
+      STOP
+      END
+
+Fortran 90/95 examples[[69]edit]
+
+Summations with a DO loop[[70]edit]
+
+   In this example of Fortran 90 code, the programmer has written the bulk
+   of the code inside of a DO loop. Upon execution, instructions are
+   printed to the screen and a SUM variable is initialized to zero outside
+   the loop. Once the loop begins, it asks the user to input any number.
+   This number is added to the variable SUM every time the loop repeats.
+   If the user inputs 0, the EXIT statement terminates the loop, and the
+   value of SUM is displayed on screen.
+
+   Also apparent in this program is a data file. Before the loop begins,
+   the program creates (or opens, if it has already been run before) a
+   text file called "SumData.DAT". During the loop, the WRITE statement
+   stores any user-inputted number in this file, and upon termination of
+   the loop, also saves the answer.
+! sum.f90
+! Performs summations using in a loop using EXIT statement
+! Saves input information and the summation in a data file
+
+program summation
+implicit none
+integer :: sum, a
+
+print*, "This program performs summations. Enter 0 to stop."
+open(unit=10, file="SumData.DAT")
+
+sum = 0
+
+do
+ print*, "Add:"
+ read*, a
+ if (a == 0) then
+  exit
+ else
+  sum = sum + a
+ end if
+ write(10,*) a
+end do
+
+print*, "Summation =", sum
+write(10,*) "Summation =", sum
+close(10)
+
+end
+
+   When executed, the console would display the following:
+ This program performs summations.  Enter 0 to stop.
+ Add:
+1
+ Add:
+2
+ Add:
+3
+ Add:
+0
+ Summation = 6
+
+   And the file SumData.DAT would contain:
+1
+2
+3
+Summation = 6
+
+Calculating cylinder area[[71]edit]
+
+   The following program, which calculates the surface area of a cylinder,
+   illustrates free-form source input and other features introduced by
+   Fortran 90.
+program cylinder
+
+! Calculate the surface area of a cylinder.
+!
+! Declare variables and constants.
+! constants=pi
+! variables=radius squared and height
+
+  implicit none    ! Require all variables to be explicitly declared
+
+  integer :: ierr
+  character(1) :: yn
+  real :: radius, height, area
+  real, parameter :: pi = 3.141592653589793
+
+  interactive_loop: do
+
+!   Prompt the user for radius and height
+!   and read them.
+
+    write (*,*) 'Enter radius and height.'
+    read (*,*,iostat=ierr) radius,height
+
+!   If radius and height could not be read from input,
+!   then cycle through the loop.
+
+    if (ierr /= 0) then
+      write(*,*) 'Error, invalid input.'
+      cycle interactive_loop
+    end if
+
+!   Compute area.  The ** means "raise to a power."
+
+    area = 2*pi * (radius**2 + radius*height)
+
+!   Write the input variables (radius, height)
+!   and output (area) to the screen.
+
+    write (*,'(1x,a7,f6.2,5x,a7,f6.2,5x,a5,f6.2)') &
+      'radius=',radius,'height=',height,'area=',area
+
+    yn = ' '
+    yn_loop: do
+      write(*,*) 'Perform another calculation? y[n]'
+      read(*,'(a1)') yn
+      if (yn=='y' .or. yn=='Y') exit yn_loop
+      if (yn=='n' .or. yn=='N' .or. yn==' ') exit interactive_loop
+    end do yn_loop
+
+  end do interactive_loop
+
+end program cylinder
+
+Dynamic memory allocation and arrays[[72]edit]
+
+   The following program illustrates dynamic memory allocation and
+   array-based operations, two features introduced with Fortran 90.
+   Particularly noteworthy is the absence of DO loops and IF/THEN
+   statements in manipulating the array; mathematical operations are
+   applied to the array as a whole. Also apparent is the use of
+   descriptive variable names and general code formatting that comport
+   with contemporary programming style. This example computes an average
+   over data entered interactively.
+program average
+
+! Read in some numbers and take the average
+! As written, if there are no data points, an average of zero is returned
+! While this may not be desired behavior, it keeps this example simple
+
+  implicit none
+  integer :: number_of_points
+  real, dimension(:), allocatable :: points
+  real :: average_points=0., positive_average=0., negative_average=0.
+
+  write (*,*) "Input number of points to average:"
+  read (*,*) number_of_points
+
+  allocate (points(number_of_points))
+
+  write (*,*) "Enter the points to average:"
+  read (*,*) points
+
+! Take the average by summing points and dividing by number_of_points
+  if (number_of_points > 0) average_points = sum(points)/number_of_points
+
+! Now form average over positive and negative points only
+  if (count(points > 0.) > 0) positive_average = sum(points, points > 0.) &
+        /count(points > 0.)
+  if (count(points < 0.) > 0) negative_average = sum(points, points < 0.) &
+        /count(points < 0.)
+
+  deallocate (points)
+
+! Print result to terminal
+  write (*,'(''Average = '', 1g12.4)') average_points
+  write (*,'(''Average of positive points = '', 1g12.4)') positive_average
+  write (*,'(''Average of negative points = '', 1g12.4)') negative_average
+
+end program average
+
+Writing functions[[73]edit]
+
+   Modern Fortran features available for use with [74]procedures,
+   including deferred-shape, protected, and optional arguments, are
+   illustrated in the following example, a function to solve a system of
+   linear equations.
+function gauss_sparse(num_iter, tol, b, A, x, actual_iter) result(tol_max)
+
+!  This function solves a system of equations (Ax = b) by using the Gauss-Seidel
+ Method
+
+   implicit none
+
+   real ::  tol_max
+
+!  Input: its value cannot be modified from within the function
+   integer, intent(in) :: num_iter
+   real, intent(in) :: tol
+   real, intent(in), dimension(:) :: b, A(:,:)
+
+!  Input/Output: its input value is used within the function, and can be modifie
+d
+   real, intent(inout) :: x(:)
+
+!  Output: its value is modified from within the function, only if the argument
+is required
+   integer, optional, intent(out) :: actual_iter
+
+!  Locals
+   integer :: i, n, iter
+   real :: xk
+
+!  Initialize values
+   n = size(b)  ! Size of array, obtained using size intrinsic function
+   tol_max = 2. * tol
+   iter = 0
+
+!  Compute solution until convergence
+   convergence_loop: do while (tol_max >= tol .and. iter < num_iter); iter = ite
+r + 1
+
+      tol_max = -1.  ! Reset the tolerance value
+
+!     Compute solution for the k-th iteration
+      iteration_loop: do i = 1, n
+
+!        Compute the current x-value
+         xk = (b(i) - dot_product(A(i,:i-1),x(:i-1)) - dot_product(A(i,i+1:n),x(
+i+1:n))) / A(i, i)
+
+!        Compute the error of the solution
+!        dot_product(a,v)=a'b
+         tol_max = max((abs(x(i) - xk)/(1. + abs(xk))) ** 2, abs(A(i, i) * (x(i)
+ - xk)), tol_max)
+         x(i) = xk
+      enddo iteration_loop
+   enddo convergence_loop
+
+   if (present(actual_iter)) actual_iter = iter
+
+end function gauss_sparse
+
+   Note that an explicit interface to this routine must be available to
+   its caller so that the [75]type signature is known. This is preferably
+   done by placing the function in a MODULE and then USEing the module in
+   the calling routine. An alternative is to use an INTERFACE block, as
+   shown by the following example:
+program test_gauss_sparse
+    implicit none
+
+!   explicit interface to the gauss_sparse function
+    interface
+        function gauss_sparse(num_iter, tol, b, A, x, actual_iter) result(tol_ma
+x)
+           real ::  tol_max
+           integer, intent(in) :: num_iter
+           real, intent(in) :: tol
+           real, intent(in), dimension(:) :: b, A(:,:)
+           real, intent(inout) :: x(:)
+           integer, optional, intent(out) :: actual_iter
+        end function
+    end interface
+
+!   declare variables
+    integer :: i, N = 3, actual_iter
+    real :: residue
+    real, allocatable :: A(:,:), x(:), b(:)
+
+!   allocate arrays
+    allocate (A(N, N), b(N), x(N))
+
+!   Initialize matrix
+    A = reshape([(real(i), i = 1, size(A))], shape(A))
+
+!   Make matrix diagonally dominant
+    do i = 1, size(A, 1)
+        A(i,i) = sum(A(i,:)) + 1
+    enddo
+
+!   Initialize b
+    b = [(i, i = 1, size(b))]
+
+!   Initial (guess) solution
+    x = b
+
+!   invoke the gauss_sparse function
+    residue = gauss_sparse(num_iter = 100, &
+                           tol = 1E-5, &
+                           b = b, &
+                           A = a, &
+                           x = x, &
+                           actual_iter = actual_iter)
+
+!   Output
+    print '(/ "A = ")'
+    do i = 1, size(A, 1)
+        print '(100f6.1)', A(i,:)
+    enddo
+
+    print '(/ "b = " / (f6.1))', b
+
+    print '(/ "residue = ", g10.3 / "iterations = ", i0 / "solution = "/ (11x, g
+10.3))', &
+        residue, actual_iter, x
+
+end program test_gauss_sparse
+
+Writing subroutines[[76]edit]
+
+   In those cases where it is desired to return values via a procedure's
+   arguments, a subroutine is preferred over a function; this is
+   illustrated by the following subroutine to swap the contents of two
+   arrays:
+subroutine swap_real(a1, a2)
+
+   implicit none
+
+!  Input/Output
+   real, intent(inout) :: a1(:), a2(:)
+
+!  Locals
+   integer :: i
+   real :: a
+
+!  Swap
+   do i = 1, min(size(a1), size(a2))
+      a = a1(i)
+      a1(i) = a2(i)
+      a2(i) = a
+   enddo
+
+end subroutine swap_real
+
+   As in the previous example, an explicit interface to this routine must
+   be available to its caller so that the [77]type signature is known. As
+   before, this is preferably done by placing the function in a MODULE and
+   then USEing the module in the calling routine. An alternative is to use
+   a INTERFACE block.
+
+Internal and Elemental Procedures[[78]edit]
+
+   An alternative way to write the swap_real subroutine from the previous
+   example, is:
+subroutine swap_real(a1, a2)
+
+   implicit none
+
+!  Input/Output
+   real, intent(inout) :: a1(:), a2(:)
+
+!  Locals
+   integer :: N
+
+!  Swap, using the internal subroutine
+   N = min(size(a1), size(a2))
+   call swap_e(a1(:N), a2(:N))
+
+ contains
+   elemental subroutine swap_e(a1, a2)
+      real, intent(inout) :: a1, a2
+      real :: a
+      a = a1
+      a1 = a2
+      a2 = a
+   end subroutine swap_e
+end subroutine swap_real
+
+   In the example, the swap_e subroutine is elemental, i.e., it acts upon
+   its array arguments, on an element-by-element basis. Elemental
+   procedures must be [79]pure (i.e., they must have no side effects and
+   can invoke only pure procedures), and all the arguments must be scalar.
+   Since swap_e is internal to the swap_real subroutine, no other program
+   unit can invoke it.
+
+   The following program serves as a test for any of the two swap_real
+   subroutines presented:
+program test_swap_real
+    implicit none
+
+!   explicit interface to the swap_real subroutine
+    interface
+        subroutine swap_real(a1, a2)
+            real, intent(inout) :: a1(:), a2(:)
+        end subroutine swap_real
+    end interface
+
+!   Declare variables
+    integer :: i
+    real :: a(10), b(10)
+
+!   Initialize a, b
+    a = [(real(i), i = 1, 20, 2)]
+    b = a + 1
+
+!   Output before swap
+    print '(/"before swap:")'
+    print '("a = [", 10f6.1, "]")', a
+    print '("b = [", 10f6.1, "]")', b
+
+!   Call the swap_real subroutine
+    call swap_real(a, b)
+
+!   Output after swap
+    print '(// "after swap:")'
+    print '("a = [", 10f6.1, "]")', a
+    print '("b = [", 10f6.1, "]")', b
+
+end program test_swap_real
+
+Pointers and targets methods[[80]edit]
+
+   In Fortran, the concept of [81]pointers differs from that in [82]C-like
+   languages. A Fortran 90 pointer does not merely store the memory
+   address of a target variable; it also contains additional descriptive
+   information such as the target's rank, the upper and lower bounds of
+   each dimension, and even strides through memory. This allows a Fortran
+   90 pointer to point at submatrices.
+
+   Fortran 90 pointers are "associated" with well-defined "target"
+   variables, via either the pointer assignment operator (=>) or an
+   ALLOCATE statement. When appearing in expressions, pointers are always
+   dereferenced; no "pointer arithmetic" is possible.
+
+   The following example illustrates the concept:
+module SomeModule
+   implicit none
+ contains
+    elemental function A(x) result(res)
+        integer :: res
+        integer, intent(IN) :: x
+        res = x + 1
+    end function
+end module SomeModule
+
+program Test
+   use SomeModule, DoSomething => A
+   implicit none
+
+   !Declare variables
+   integer, parameter :: m = 3, n = 3
+   integer, pointer :: p(:)=>null(), q(:,:)=>null()
+   integer, allocatable, target :: A(:,:)
+   integer :: istat = 0, i, j
+   character(80) :: fmt
+
+!  Write format string for matrices
+!  (/ A / A, " = [", 3( "[",3(i2, 1x), "]" / 5x), "]" )
+   write (fmt, '("(/ A / A, "" = ["", ", i0, "( ""["",", i0, "(i2, 1x), ""]"" /
+5x), ""]"" )")') m, n
+
+   allocate(A(m, n), q(m, n), stat = istat)
+   if (istat /= 0) stop 'Error during allocation of A and q'
+
+!  Matrix A is:
+!  A = [[ 1  4  7 ]
+!       [ 2  5  8 ]
+!       [ 3  6  9 ]
+!       ]
+   A = reshape([(i, i = 1, size(A))], shape(A))
+   q = A
+
+   write(*, fmt) "Matrix A is:", "A", ((A(i, j), j = 1, size(A, 2)), i = 1, size
+(A, 1))
+
+!  p will be associated with the first column of A
+   p => A(:, 1)
+
+!  This operation on p has a direct effect on matrix A
+   p = p ** 2
+
+!  This will end the association between p and the first column of A
+   nullify(p)
+
+!  Matrix A becomes:
+!  A = [[ 1  4  7 ]
+!       [ 4  5  8 ]
+!       [ 9  6  9 ]
+!       ]
+   write(*, fmt) "Matrix A becomes:", "A", ((A(i, j), j = 1, size(A, 2)), i = 1,
+ size(A, 1))
+
+!  Perform some array operation
+   q = q + A
+
+!  Matrix q becomes:
+!  q = [[ 2  8 14 ]
+!       [ 6 10 16 ]
+!       [12 12 18 ]
+!       ]
+   write(*, fmt) "Matrix q becomes:", "q", ((q(i, j), j = 1, size(A, 2)), i = 1,
+ size(A, 1))
+
+!  Use p as an ordinary array
+   allocate (p(1:m*n), stat = istat)
+   if (istat /= 0) stop 'Error during allocation of p'
+
+!  Perform some array operation
+   p = reshape(DoSomething(A + A ** 2), shape(p))
+
+!  Array operation:
+!      p(1) = 3
+!      p(2) = 21
+!      p(3) = 91
+!      p(4) = 21
+!      p(5) = 31
+!      p(6) = 43
+!      p(7) = 57
+!      p(8) = 73
+!      p(9) = 91
+   write(*, '("Array operation:" / (4x,"p(",i0,") = ",i0))') (i, p(i), i = 1, si
+ze(p))
+
+   deallocate(A, p, q, stat = istat)
+   if (istat /= 0) stop 'Error during deallocation'
+
+end program Test
+
+Module programming[[83]edit]
+
+   A [84]module is a program unit which contains data definitions, global
+   data, and CONTAINed procedures. Unlike a simple [85]INCLUDE file, a
+   module is an independent program unit that can be compiled separately
+   and linked in its binary form. Once compiled, a module's public
+   contents can be made visible to a calling routine via the USE
+   statement.
+
+   The module mechanism makes the [86]explicit interface of procedures
+   easily available to calling routines. In fact, modern Fortran
+   encourages every SUBROUTINE and FUNCTION to be CONTAINed in a MODULE.
+   This allows the programmer to use the newer argument passing options
+   and allows the compiler to perform full type checking on the interface.
+
+   The following example also illustrates derived types, overloading of
+   operators and generic procedures.
+module GlobalModule
+
+!  Reference to a pair of procedures included in a previously compiled
+!  module named PortabilityLibrary
+   use PortabilityLibrary, only: GetLastError, &  ! Generic procedure
+                                 Date             ! Specific procedure
+!  Constants
+   integer, parameter :: dp_k = kind (1.0d0)      ! Double precision kind
+   real, parameter :: zero = (0.)
+   real(dp_k), parameter :: pi = 3.141592653589793_dp_k
+
+!  Variables
+   integer :: n, m, retint
+   logical :: status, retlog
+   character(50) :: AppName
+
+!  Arrays
+   real, allocatable, dimension(:,:,:) :: a, b, c, d
+   complex(dp_k), allocatable, dimension(:) :: z
+
+!  Derived type definitions
+   type ijk
+      integer :: i
+      integer :: j
+      integer :: k
+   end type ijk
+
+   type matrix
+     integer m, n
+     real, allocatable :: a(:,:)  ! Fortran 2003 feature. For Fortran 95, use th
+e pointer attribute instead
+   end type matrix
+
+!  All the variables and procedures from this module can be accessed
+!  by other program units, except for AppName
+   public
+   private :: AppName
+
+!  Generic procedure swap
+   interface swap
+      module procedure swap_integer, swap_real
+   end interface swap
+
+   interface GetLastError  ! This adds a new, additional procedure to the
+                           ! generic procedure GetLastError
+      module procedure GetLastError_GlobalModule
+   end interface GetLastError
+
+!  Operator overloading
+   interface operator(+)
+      module procedure add_ijk
+   end interface
+
+!  Prototype for external procedure
+   interface
+      function gauss_sparse(num_iter, tol, b, A, x, actual_iter) result(tol_max)
+         real ::  tol_max
+         integer, intent(in) :: num_iter
+         real, intent(in) :: tol
+         real, intent(in), dimension(:) :: b, A(:,:)
+         real, intent(inout) :: x(:)
+         integer, optional, intent(out) :: actual_iter
+      end function gauss_sparse
+   end interface
+
+!  Procedures included in the module
+   contains
+
+!  Internal function
+   function add_ijk(ijk_1, ijk_2)
+     type(ijk) add_ijk, ijk_1, ijk_2
+     intent(in) :: ijk_1, ijk_2
+     add_ijk = ijk(ijk_1%i + ijk_2%i, ijk_1%j + ijk_2%j, ijk_1%k + ijk_2%k)
+   end function add_ijk
+
+!  Include external files
+   include 'swap_integer.f90' ! Comments SHOULDN'T be added on include lines
+   include 'swap_real.f90'
+end module GlobalModule
+
+   Retrieved from
+   "[87]https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_example
+   s&oldid=3496094"
+   [88]Category:
+     * [89]Book:Fortran
+
+Navigation menu
+
+Personal tools
+
+     * Not logged in
+     * [90]Discussion for this IP address
+     * [91]Contributions
+     * [92]Create account
+     * [93]Log in
+
+Namespaces
+
+     * [94]Book
+     * [95]Discussion
+
+   [ ]
+
+Variants
+
+Views
+
+     * [96]Read
+     * [97]Edit
+     * [98]View history
+
+   [ ]
+
+More
+
+Search
+
+   ____________________ Search Go
+
+Navigation
+
+     * [99]Main Page
+     * [100]Help
+     * [101]Browse
+     * [102]Cookbook
+     * [103]Wikijunior
+     * [104]Featured books
+     * [105]Recent changes
+     * [106]Donations
+     * [107]Random book
+     * [108]Using Wikibooks
+
+Community
+
+     * [109]Reading room
+     * [110]Community portal
+     * [111]Bulletin Board
+     * [112]Help out!
+     * [113]Policies and guidelines
+     * [114]Contact us
+
+Tools
+
+     * [115]What links here
+     * [116]Related changes
+     * [117]Upload file
+     * [118]Special pages
+     * [119]Permanent link
+     * [120]Page information
+     * [121]Cite this page
+
+In other languages
+
+   [122]Add links
+
+Sister projects
+
+     * [123]Wikipedia
+     * [124]Wikiversity
+     * [125]Wiktionary
+     * [126]Wikiquote
+     * [127]Wikisource
+     * [128]Wikinews
+     * [129]Wikivoyage
+     * [130]Commons
+     * [131]Wikidata
+
+Print/export
+
+     * [132]Create a collection
+     * [133]Download as PDF
+     * [134]Printable version
+
+     * This page was last edited on 7 December 2018, at 02:18.
+     * Text is available under the [135]Creative Commons
+       Attribution-ShareAlike License.; additional terms may apply. By
+       using this site, you agree to the [136]Terms of Use and
+       [137]Privacy Policy.
+
+     * [138]Privacy policy
+     * [139]About Wikibooks
+     * [140]Disclaimers
+     * [141]Developers
+     * [142]Statistics
+     * [143]Cookie statement
+     * [144]Mobile view
+
+     * [145]Wikimedia Foundation
+     * [146]Powered by MediaWiki
+
+References
+
+   Visible links:
+   1. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit
+   2. https://en.wikibooks.org/w/opensearch_desc.php
+   3. https://en.wikibooks.org/w/index.php?title=Special:RecentChanges&feed=atom
+   4. https://en.wikibooks.org/wiki/Fortran
+   5. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#mw-head
+   6. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#p-search
+   7. https://en.wikibooks.org/wiki/Fortran
+   8. https://en.wikibooks.org/wiki/Fortran#Free_(open-source)_compilers
+   9. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#FORTRAN_II,_IV,_and_77_compilers
+  10. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Area_Of_a_Triangle_program
+  11. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Simple_Fortran_II_program
+  12. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Simple_Fortran_IV_program
+  13. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Simple_Fortran_77_program
+  14. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#"Retro"_FORTRAN_IV
+  15. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Hello,_World_program
+  16. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#FORTRAN_66_(also_FORTRAN_IV)
+  17. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#FORTRAN_77
+  18. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Fortran_90
+  19. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Fortran_77_examples
+  20. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Greatest_common_divisor
+  21. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Complex_numbers
+  22. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#FORTRAN_program_to_find_the_area_of_a_triangle
+  23. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Fortran_90/95_examples
+  24. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Summations_with_a_DO_loop
+  25. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Calculating_cylinder_area
+  26. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Dynamic_memory_allocation_and_arrays
+  27. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Writing_functions
+  28. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Writing_subroutines
+  29. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Internal_and_Elemental_Procedures
+  30. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Pointers_and_targets_methods
+  31. https://en.wikibooks.org/wiki/Fortran/Fortran_examples#Module_programming
+  32. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=1
+  33. https://en.wikipedia.org/wiki/Punch_card
+  34. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=2
+  35. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=3
+  36. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=4
+  37. https://en.wikibooks.org/wiki/Print_Entire_Xml_Document
+  38. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=5
+  39. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=6
+  40. https://en.wikipedia.org/wiki/IBM_1130
+  41. http://ibm1130.org/
+  42. https://en.wikipedia.org/wiki/Personal_computer
+  43. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=7
+  44. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=8
+  45. https://en.wikipedia.org/wiki/line_printer
+  46. https://en.wikipedia.org/wiki/Computer_terminal
+  47. https://en.wikipedia.org/wiki/Punch_card
+  48. https://en.wikipedia.org/wiki/Computer_keyboard
+  49. https://en.wikipedia.org/wiki/NOP
+  50. https://en.wikipedia.org/wiki/Hollerith_constant
+  51. https://en.wikipedia.org/wiki/Quotation_mark
+  52. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=9
+  53. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=10
+  54. https://en.wikipedia.org/wiki/quotation_mark
+  55. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=11
+  56. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=12
+  57. https://en.wikipedia.org/wiki/greatest_common_divisor
+  58. https://en.wikipedia.org/wiki/Euclidean_algorithm#Description_of_the_algorithm
+  59. https://en.wikipedia.org/wiki/Fortran_language_features#Implicit_and_explicit_typing
+  60. https://en.wikipedia.org/wiki/evaluation_strategy#Call_by_reference
+  61. https://en.wikipedia.org/wiki/evaluation_strategy#Call_by_value
+  62. https://en.wikipedia.org/wiki/C_programming_language
+  63. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=13
+  64. https://en.wikipedia.org/wiki/Fortran_language_features#Implicit_and_explicit_typing
+  65. https://en.wikipedia.org/wiki/imaginary_unit
+  66. https://en.wikipedia.org/wiki/Euler's_formula
+  67. https://en.wikipedia.org/wiki/complex_plane
+  68. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=14
+  69. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=15
+  70. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=16
+  71. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=17
+  72. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=18
+  73. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=19
+  74. https://en.wikipedia.org/wiki/subroutine
+  75. https://en.wikipedia.org/wiki/type_signature
+  76. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=20
+  77. https://en.wikipedia.org/wiki/type_signature
+  78. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=21
+  79. https://en.wikipedia.org/wiki/Pure_function
+  80. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=22
+  81. https://en.wikipedia.org/wiki/Pointer_(computing)
+  82. https://en.wikibooks.org/wiki/C_programming_language
+  83. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit&section=23
+  84. https://en.wikipedia.org/wiki/Modular_programming
+  85. https://en.wikipedia.org/wiki/include_file
+  86. https://en.wikipedia.org/wiki/type_signature
+  87. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&oldid=3496094
+  88. https://en.wikibooks.org/wiki/Special:Categories
+  89. https://en.wikibooks.org/wiki/Category:Book:Fortran
+  90. https://en.wikibooks.org/wiki/Special:MyTalk
+  91. https://en.wikibooks.org/wiki/Special:MyContributions
+  92. https://en.wikibooks.org/w/index.php?title=Special:CreateAccount&returnto=Fortran/Fortran+examples
+  93. https://en.wikibooks.org/w/index.php?title=Special:UserLogin&returnto=Fortran/Fortran+examples
+  94. https://en.wikibooks.org/wiki/Fortran/Fortran_examples
+  95. https://en.wikibooks.org/wiki/Talk:Fortran/Fortran_examples
+  96. https://en.wikibooks.org/wiki/Fortran/Fortran_examples
+  97. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=edit
+  98. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=history
+  99. https://en.wikibooks.org/wiki/Main_Page
+ 100. https://en.wikibooks.org/wiki/Help:Contents
+ 101. https://en.wikibooks.org/wiki/Wikibooks:Card_Catalog_Office
+ 102. https://en.wikibooks.org/wiki/Cookbook:Table_of_Contents
+ 103. https://en.wikibooks.org/wiki/Wikijunior
+ 104. https://en.wikibooks.org/wiki/Wikibooks:Featured_books
+ 105. https://en.wikibooks.org/wiki/Special:RecentChanges
+ 106. https://donate.wikimedia.org/wiki/Special:FundraiserRedirector?utm_source=donate&utm_medium=sidebar&utm_campaign=C13_en.wikibooks.org&uselang=en
+ 107. https://en.wikibooks.org/wiki/Special:RandomInCategory/Book:Wikibooks_Stacks/Books
+ 108. https://en.wikibooks.org/wiki/Using_Wikibooks
+ 109. https://en.wikibooks.org/wiki/Wikibooks:Reading_room
+ 110. https://en.wikibooks.org/wiki/Wikibooks:Community_Portal
+ 111. https://en.wikibooks.org/wiki/Wikibooks:Reading_room/Bulletin_Board
+ 112. https://en.wikibooks.org/wiki/Wikibooks:Maintenance
+ 113. https://en.wikibooks.org/wiki/Wikibooks:Policies_and_guidelines
+ 114. https://en.wikibooks.org/wiki/Wikibooks:Contact_us
+ 115. https://en.wikibooks.org/wiki/Special:WhatLinksHere/Fortran/Fortran_examples
+ 116. https://en.wikibooks.org/wiki/Special:RecentChangesLinked/Fortran/Fortran_examples
+ 117. https://commons.wikimedia.org/wiki/Special:UploadWizard?uselang=en
+ 118. https://en.wikibooks.org/wiki/Special:SpecialPages
+ 119. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&oldid=3496094
+ 120. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&action=info
+ 121. https://en.wikibooks.org/w/index.php?title=Special:CiteThisPage&page=Fortran/Fortran_examples&id=3496094
+ 122. https://www.wikidata.org/wiki/Special:NewItem?site=enwikibooks&page=Fortran/Fortran+examples
+ 123. https://en.wikipedia.org/wiki/Main_Page
+ 124. https://en.wikiversity.org/wiki/Wikiversity:Main_Page
+ 125. https://en.wiktionary.org/wiki/Wiktionary:Main_Page
+ 126. https://en.wikiquote.org/wiki/Main_Page
+ 127. https://en.wikisource.org/wiki/Main_Page
+ 128. https://en.wikinews.org/wiki/Main_Page
+ 129. https://en.wikivoyage.org/wiki/Main_Page
+ 130. https://commons.wikimedia.org/wiki/Main_Page
+ 131. https://www.wikidata.org/wiki/Wikidata:Main_Page
+ 132. https://en.wikibooks.org/w/index.php?title=Special:Book&bookcmd=book_creator&referer=Fortran/Fortran+examples
+ 133. https://en.wikibooks.org/w/index.php?title=Special:ElectronPdf&page=Fortran/Fortran+examples&action=show-download-screen
+ 134. https://en.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&printable=yes
+ 135. https://creativecommons.org/licenses/by-sa/3.0/
+ 136. https://wikimediafoundation.org/wiki/Terms_of_Use
+ 137. https://wikimediafoundation.org/wiki/Privacy_policy
+ 138. https://foundation.wikimedia.org/wiki/Privacy_policy
+ 139. https://en.wikibooks.org/wiki/Wikibooks:Welcome
+ 140. https://en.wikibooks.org/wiki/Wikibooks:General_disclaimer
+ 141. https://www.mediawiki.org/wiki/Special:MyLanguage/How_to_contribute
+ 142. https://stats.wikimedia.org/#/en.wikibooks.org
+ 143. https://foundation.wikimedia.org/wiki/Cookie_statement
+ 144. https://en.m.wikibooks.org/w/index.php?title=Fortran/Fortran_examples&mobileaction=toggle_view_mobile
+ 145. https://wikimediafoundation.org/
+ 146. https://www.mediawiki.org/
+
+   Hidden links:
+ 148. https://en.wikibooks.org/wiki/Main_Page
